@@ -12,15 +12,17 @@ import {
   SidebarGroupLabel,
   SidebarTrigger
 } from "@/components/ui/sidebar";
-import { Book, Home } from "lucide-react";
+import { Book, Home, Plus } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { getUserCourses } from "@/data/coursesData";
+import { Button } from "@/components/ui/button";
 
 interface CourseSidebarProps {
   activeCourseId?: string;
+  onJoinCourse: () => void;
 }
 
-const CourseSidebar = ({ activeCourseId }: CourseSidebarProps) => {
+const CourseSidebar = ({ activeCourseId, onJoinCourse }: CourseSidebarProps) => {
   const { currentUser } = useAuth();
   const navigate = useNavigate();
   const userCourses = currentUser ? getUserCourses(currentUser.id) : [];
@@ -50,7 +52,17 @@ const CourseSidebar = ({ activeCourseId }: CourseSidebarProps) => {
         </SidebarGroup>
         
         <SidebarGroup>
-          <SidebarGroupLabel>My Courses</SidebarGroupLabel>
+          <div className="flex items-center justify-between px-2 mb-2">
+            <SidebarGroupLabel>My Courses</SidebarGroupLabel>
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              onClick={onJoinCourse}
+              className="h-7 w-7"
+            >
+              <Plus className="h-4 w-4" />
+            </Button>
+          </div>
           <SidebarMenu>
             {userCourses.length > 0 ? (
               userCourses.map(course => (

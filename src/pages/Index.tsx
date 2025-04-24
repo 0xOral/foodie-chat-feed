@@ -8,12 +8,14 @@ import ProfileCard from "@/components/ProfileCard";
 import { posts, Post as PostType } from "@/data/mockData";
 import { useAuth } from "@/context/AuthContext";
 import CourseSidebar from "@/components/CourseSidebar";
-import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
+import { SidebarProvider } from "@/components/ui/sidebar";
+import CourseJoinDialog from "@/components/CourseJoinDialog";
 
 const Index = () => {
   const [allPosts, setAllPosts] = useState<PostType[]>(posts);
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
+  const [isJoinDialogOpen, setIsJoinDialogOpen] = useState(false);
 
   const handlePostCreated = (newPost: PostType) => {
     setAllPosts(prev => [newPost, ...prev]);
@@ -21,10 +23,10 @@ const Index = () => {
 
   return (
     <SidebarProvider defaultOpen={true}>
-      <div className="min-h-screen bg-foodle-background text-foodle-text flex">
-        <CourseSidebar />
+      <div className="min-h-screen bg-foodle-background text-foodle-text flex w-full">
+        <CourseSidebar onJoinCourse={() => setIsJoinDialogOpen(true)} />
         
-        <SidebarInset className="flex-1">
+        <div className="flex-1">
           <Navbar />
           
           <div className="max-w-7xl mx-auto px-4 md:px-6 py-6">
@@ -61,8 +63,13 @@ const Index = () => {
               </div>
             </div>
           </div>
-        </SidebarInset>
+        </div>
       </div>
+
+      <CourseJoinDialog 
+        open={isJoinDialogOpen} 
+        onOpenChange={setIsJoinDialogOpen}
+      />
     </SidebarProvider>
   );
 };
