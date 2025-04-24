@@ -10,12 +10,14 @@ import { useAuth } from "@/context/AuthContext";
 import { BookOpen, Users } from "lucide-react";
 import CourseSidebar from "@/components/CourseSidebar";
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
+import CourseJoinDialog from "@/components/CourseJoinDialog";
 
 const Course = () => {
   const { courseId } = useParams<{ courseId: string }>();
   const [coursePosts, setCoursePosts] = useState<PostType[]>([]);
   const { currentUser, isAuthenticated } = useAuth();
   const navigate = useNavigate();
+  const [isJoinDialogOpen, setIsJoinDialogOpen] = useState(false);
   
   const course = courseId ? getCourseById(courseId) : undefined;
 
@@ -50,7 +52,10 @@ const Course = () => {
   return (
     <SidebarProvider defaultOpen={true}>
       <div className="min-h-screen bg-foodle-background text-foodle-text flex">
-        <CourseSidebar activeCourseId={courseId} />
+        <CourseSidebar 
+          activeCourseId={courseId} 
+          onJoinCourse={() => setIsJoinDialogOpen(true)}
+        />
         
         <SidebarInset className="flex-1">
           <Navbar />
@@ -107,6 +112,11 @@ const Course = () => {
           </div>
         </SidebarInset>
       </div>
+
+      <CourseJoinDialog 
+        open={isJoinDialogOpen} 
+        onOpenChange={setIsJoinDialogOpen}
+      />
     </SidebarProvider>
   );
 };

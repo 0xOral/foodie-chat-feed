@@ -11,6 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Settings, Image, BookOpen } from "lucide-react";
 import CourseSidebar from "@/components/CourseSidebar";
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
+import CourseJoinDialog from "@/components/CourseJoinDialog";
 
 const Profile = () => {
   const { userId } = useParams<{ userId: string }>();
@@ -18,6 +19,7 @@ const Profile = () => {
   const [activeTab, setActiveTab] = useState("posts");
   const { currentUser, isAuthenticated } = useAuth();
   const navigate = useNavigate();
+  const [isJoinDialogOpen, setIsJoinDialogOpen] = useState(false);
   
   // Determine which user to display
   const profileUser = userId ? findUserById(userId) : currentUser;
@@ -59,7 +61,7 @@ const Profile = () => {
   return (
     <SidebarProvider defaultOpen={true}>
       <div className="min-h-screen bg-foodle-background text-foodle-text flex">
-        <CourseSidebar />
+        <CourseSidebar onJoinCourse={() => setIsJoinDialogOpen(true)} />
         
         <SidebarInset className="flex-1">
           <Navbar />
@@ -173,6 +175,11 @@ const Profile = () => {
           </div>
         </SidebarInset>
       </div>
+
+      <CourseJoinDialog 
+        open={isJoinDialogOpen} 
+        onOpenChange={setIsJoinDialogOpen}
+      />
     </SidebarProvider>
   );
 };
