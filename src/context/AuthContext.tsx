@@ -71,6 +71,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             id: `${users.length + 1}`,
             username,
             profilePicture: "/placeholder.svg",
+            karma: 0, // Initialize karma to 0 for new users
+            enrolledCourses: [] // Initialize with empty array of enrolled courses
           };
           
           // Note: In this mock implementation, we're not actually adding the user to our users array
