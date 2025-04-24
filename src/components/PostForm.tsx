@@ -6,16 +6,21 @@ import { useAuth } from "@/context/AuthContext";
 import { useToast } from "@/components/ui/use-toast";
 import { Send, Image } from "lucide-react";
 import { Post } from "@/data/mockData";
+import { getUserCourses } from "@/data/coursesData";
 
 interface PostFormProps {
   onPostCreated: (post: Post) => void;
+  courseId?: string; // Optional courseId for when on a course page
 }
 
-const PostForm = ({ onPostCreated }: PostFormProps) => {
+const PostForm = ({ onPostCreated, courseId }: PostFormProps) => {
   const [content, setContent] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { currentUser, isAuthenticated } = useAuth();
   const { toast } = useToast();
+
+  // Get the user's enrolled courses
+  const userCourses = currentUser ? getUserCourses(currentUser.id) : [];
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -38,6 +43,19 @@ const PostForm = ({ onPostCreated }: PostFormProps) => {
       return;
     }
     
+    // If no course selected and not on a course page, show error
+    if (!courseId && userCourses.length > 0) {
+      toast({
+        title: "Course required",
+        description: "Please select a course for your post",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    // Use the provided courseId or default to the first user course
+    const postCourseId = courseId || (userCourses.length > 0 ? userCourses[0].id : "");
+    
     setIsSubmitting(true);
     
     // In a real app, this would be an API call
@@ -45,6 +63,7 @@ const PostForm = ({ onPostCreated }: PostFormProps) => {
       const newPost: Post = {
         id: `post-${Date.now()}`,
         userId: currentUser.id,
+        courseId: postCourseId,
         content: content.trim(),
         image: "/placeholder.svg", // For demo purposes
         likes: 0,
@@ -74,7 +93,7 @@ const PostForm = ({ onPostCreated }: PostFormProps) => {
           />
           <div className="flex-1">
             <Textarea
-              placeholder={isAuthenticated ? "What's cooking?" : "Sign in to create a post"}
+              placeholder={isAuthenticated ? "What's on your mind?" : "Sign in to create a post"}
               className="min-h-20 resize-none bg-gray-800 border-gray-700 text-foodle-text"
               value={content}
               onChange={(e) => setContent(e.target.value)}

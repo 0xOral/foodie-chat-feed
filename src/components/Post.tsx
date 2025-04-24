@@ -1,13 +1,15 @@
 
 import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Post as PostType, findUserById } from "@/data/mockData";
+import { getCourseById } from "@/data/coursesData";
 import Comment from "./Comment";
 import CommentForm from "./CommentForm";
 import { useAuth } from "@/context/AuthContext";
 import { useToast } from "@/components/ui/use-toast";
-import { MessageSquare, Heart } from "lucide-react";
+import { MessageSquare, Heart, BookOpen } from "lucide-react";
 
 interface PostProps {
   post: PostType;
@@ -17,8 +19,10 @@ const Post = ({ post }: PostProps) => {
   const [currentPost, setCurrentPost] = useState<PostType>(post);
   const [showComments, setShowComments] = useState(false);
   const user = findUserById(post.userId);
+  const course = getCourseById(post.courseId);
   const { isAuthenticated } = useAuth();
   const { toast } = useToast();
+  const navigate = useNavigate();
   
   // Format the date
   const formatDate = (dateString: string) => {
@@ -57,20 +61,33 @@ const Post = ({ post }: PostProps) => {
     setShowComments(true);
   };
 
+  const handleUserClick = (userId: string) => {
+    navigate(`/profile/${userId}`);
+  };
+
   return (
     <div className="food-card mb-6 animate-enter">
       <div className="flex items-start gap-3">
         <img 
           src={user?.profilePicture || "/placeholder.svg"} 
           alt={user?.username || "User"} 
-          className="w-10 h-10 rounded-full object-cover"
+          className="w-10 h-10 rounded-full object-cover cursor-pointer"
+          onClick={() => user && handleUserClick(user.id)}
         />
         <div className="flex-1">
           <div className="flex justify-between items-center">
             <div>
-              <h3 className="font-medium text-foodle-text">{user?.username || "Unknown User"}</h3>
+              <Link to={`/profile/${user?.id}`} className="font-medium text-foodle-text hover:text-foodle-accent transition-colors">
+                {user?.username || "Unknown User"}
+              </Link>
               <p className="text-xs text-gray-500">{formatDate(post.createdAt)}</p>
             </div>
+            {course && (
+              <Link to={`/course/${course.id}`} className="flex items-center gap-1 px-2 py-1 rounded-md bg-gray-800 text-xs text-gray-300 hover:bg-gray-700">
+                <BookOpen className="h-3.5 w-3.5" />
+                <span>{course.code}</span>
+              </Link>
+            )}
           </div>
           <p className="mt-2 text-foodle-text">{currentPost.content}</p>
           

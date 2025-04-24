@@ -3,6 +3,8 @@ export interface User {
   id: string;
   username: string;
   profilePicture: string;
+  karma: number;
+  enrolledCourses: string[]; // Course IDs
 }
 
 export interface Comment {
@@ -16,6 +18,7 @@ export interface Comment {
 export interface Post {
   id: string;
   userId: string;
+  courseId: string;
   content: string;
   image?: string;
   likes: number;
@@ -27,17 +30,23 @@ export const users: User[] = [
   {
     id: "1",
     username: "foodlover123",
-    profilePicture: "/placeholder.svg"
+    profilePicture: "/placeholder.svg",
+    karma: 245,
+    enrolledCourses: ["c1", "c2", "c4"]
   },
   {
     id: "2",
     username: "chefsdelight",
-    profilePicture: "/placeholder.svg"
+    profilePicture: "/placeholder.svg",
+    karma: 189,
+    enrolledCourses: ["c1", "c3"]
   },
   {
     id: "3",
     username: "tastytreats",
-    profilePicture: "/placeholder.svg"
+    profilePicture: "/placeholder.svg",
+    karma: 327,
+    enrolledCourses: ["c1", "c2", "c3"]
   }
 ];
 
@@ -45,6 +54,7 @@ export const posts: Post[] = [
   {
     id: "1",
     userId: "1",
+    courseId: "c1",
     content: "Just made the most amazing homemade pasta! The secret is in the sauce 🍝",
     image: "/placeholder.svg",
     likes: 24,
@@ -69,6 +79,7 @@ export const posts: Post[] = [
   {
     id: "2",
     userId: "2",
+    courseId: "c2",
     content: "Tried a new sourdough recipe this weekend. The crumb is perfect! 🍞",
     image: "/placeholder.svg",
     likes: 18,
@@ -86,6 +97,7 @@ export const posts: Post[] = [
   {
     id: "3",
     userId: "3",
+    courseId: "c1",
     content: "Found this amazing little bistro downtown. Their crème brûlée is to die for! 🍮",
     image: "/placeholder.svg",
     likes: 31,
@@ -104,4 +116,33 @@ export const findPostById = (id: string): Post | undefined => {
 
 export const getPostsByUserId = (userId: string): Post[] => {
   return posts.filter(post => post.userId === userId);
+};
+
+export const getPostsByCourseId = (courseId: string): Post[] => {
+  return posts.filter(post => post.courseId === courseId);
+};
+
+export const calculateKarma = (userId: string): number => {
+  // Find the user
+  const user = findUserById(userId);
+  if (!user) return 0;
+  
+  // Start with base karma
+  let karma = user.karma;
+  
+  // Add karma for posts
+  const userPosts = getPostsByUserId(userId);
+  karma += userPosts.length * 5; // 5 karma points per post
+  
+  // Add karma for comments
+  const userComments = posts.flatMap(post => 
+    post.comments.filter(comment => comment.userId === userId)
+  );
+  karma += userComments.length * 2; // 2 karma points per comment
+  
+  // Add karma for likes received
+  const likesReceived = userPosts.reduce((sum, post) => sum + post.likes, 0);
+  karma += likesReceived;
+  
+  return karma;
 };
