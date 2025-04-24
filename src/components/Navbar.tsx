@@ -4,16 +4,27 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/AuthContext";
 import { Link } from "react-router-dom";
 import AuthModal from "./AuthModal";
-import { Home, MessageSquare, User, LogOut } from "lucide-react";
+import { Home, MessageSquare, User, LogOut, Menu } from "lucide-react";
+import { useSidebar } from "@/components/ui/sidebar";
 
 const Navbar = () => {
   const { currentUser, isAuthenticated, logout } = useAuth();
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const { toggleSidebar } = useSidebar();
 
   return (
     <nav className="sticky top-0 z-10 bg-foodle-background border-b border-gray-800 py-4 px-4 md:px-8">
       <div className="max-w-7xl mx-auto flex justify-between items-center">
-        <div className="flex items-center">
+        <div className="flex items-center gap-4">
+          <Button 
+            variant="ghost" 
+            size="icon"
+            className="mr-2"
+            onClick={toggleSidebar}
+          >
+            <Menu className="h-5 w-5" />
+          </Button>
+
           <Link to="/" className="text-foodle-accent text-2xl font-bold mr-8 hover-scale">
             Foodle
           </Link>
@@ -67,9 +78,6 @@ const Navbar = () => {
           )}
         </div>
       </div>
-      
-      {/* Auth Modal */}
-      <AuthModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} />
     </nav>
   );
 };
