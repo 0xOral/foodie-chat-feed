@@ -14,6 +14,13 @@ const Chat = () => {
   const [isJoinDialogOpen, setIsJoinDialogOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
+  const handleSignIn = () => {
+    const authTrigger = document.querySelector("#auth-trigger") as HTMLButtonElement;
+    if (authTrigger) {
+      authTrigger.click();
+    }
+  };
+
   return (
     <SidebarProvider defaultOpen={true}>
       <div className="min-h-screen bg-foodle-background text-foodle-text flex">
@@ -37,7 +44,7 @@ const Chat = () => {
                   Connect with other food enthusiasts and share your culinary tips in private messages.
                 </p>
                 <Button 
-                  onClick={() => document.querySelector("#auth-trigger")?.click()}
+                  onClick={handleSignIn}
                   className="bg-foodle-accent hover:bg-foodle-accent-hover"
                 >
                   Sign In
