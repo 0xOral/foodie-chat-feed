@@ -3,13 +3,12 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/context/AuthContext";
-import { useToast } from "@/components/ui/use-toast";
+import { toast } from "sonner";
 import { Send, Image } from "lucide-react";
 import { Post } from "@/data/mockData";
 import { getUserCourses } from "@/data/coursesData";
 import { createPost } from "@/api/post";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { toast } from "sonner";
 
 interface PostFormProps {
   onPostCreated: (post: Post) => void;
@@ -21,7 +20,6 @@ const PostForm = ({ onPostCreated, courseId }: PostFormProps) => {
   const [selectedCourseId, setSelectedCourseId] = useState<string>(courseId || "");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { currentUser, isAuthenticated } = useAuth();
-  const { toast } = useToast();
 
   // Get the user's enrolled courses
   const userCourses = currentUser ? getUserCourses(currentUser.id) : [];
@@ -30,20 +28,12 @@ const PostForm = ({ onPostCreated, courseId }: PostFormProps) => {
     e.preventDefault();
     
     if (!isAuthenticated || !currentUser) {
-      toast({
-        title: "Authentication required",
-        description: "Please sign in to create posts",
-        variant: "destructive",
-      });
+      toast.error("Please sign in to create posts");
       return;
     }
     
     if (!content.trim()) {
-      toast({
-        title: "Empty post",
-        description: "Please write something before submitting",
-        variant: "destructive",
-      });
+      toast.error("Please write something before submitting");
       return;
     }
     
@@ -51,11 +41,7 @@ const PostForm = ({ onPostCreated, courseId }: PostFormProps) => {
     
     // If no course selected and not on a course page, show error
     if (!postCourseId && userCourses.length > 0) {
-      toast({
-        title: "Course required",
-        description: "Please select a course for your post",
-        variant: "destructive",
-      });
+      toast.error("Please select a course for your post");
       return;
     }
     

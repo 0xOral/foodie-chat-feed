@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/context/AuthContext";
-import { useToast } from "@/components/ui/use-toast";
+import { toast } from "sonner";
 import { Send } from "lucide-react";
 import { Comment } from "@/data/mockData";
 import { createComment } from "@/api/post";
@@ -17,26 +17,17 @@ const CommentForm = ({ postId, onCommentAdded }: CommentFormProps) => {
   const [content, setContent] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { currentUser, isAuthenticated } = useAuth();
-  const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!isAuthenticated || !currentUser) {
-      toast({
-        title: "Authentication required",
-        description: "Please sign in to comment on posts",
-        variant: "destructive",
-      });
+      toast.error("Please sign in to comment on posts");
       return;
     }
     
     if (!content.trim()) {
-      toast({
-        title: "Empty comment",
-        description: "Please write something before submitting",
-        variant: "destructive",
-      });
+      toast.error("Please write something before submitting");
       return;
     }
     
@@ -53,11 +44,7 @@ const CommentForm = ({ postId, onCommentAdded }: CommentFormProps) => {
       setContent("");
     } catch (error) {
       console.error("Error creating comment:", error);
-      toast({
-        title: "Error",
-        description: "Failed to add comment. Please try again.",
-        variant: "destructive",
-      });
+      toast.error("Failed to add comment. Please try again.");
     } finally {
       setIsSubmitting(false);
     }

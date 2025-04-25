@@ -1,12 +1,12 @@
 
 import { toast } from "sonner";
-import { getCourseById, getCourses } from "@/data/coursesData";
+import { courses, getCourseById } from "@/data/coursesData";
 
 export const fetchCourses = async () => {
   // Simulate API delay
   await new Promise(resolve => setTimeout(resolve, 600));
   
-  return getCourses();
+  return courses;
 };
 
 export const fetchCourseById = async (courseId: string) => {
@@ -34,9 +34,8 @@ export const joinCourse = async (userId: string, courseId: string, accessCode?: 
     throw new Error("Course not found");
   }
   
-  // In a real app, you would validate the access code if required
-  // For now, we'll just check if an access code is provided when needed
-  if (course.requiresAccessCode && (!accessCode || accessCode !== "1234")) {
+  // For now we'll consider all courses require the fixed access code "1234" if one is provided
+  if (accessCode && accessCode !== "1234") {
     toast.error("Invalid access code");
     throw new Error("Invalid access code");
   }
