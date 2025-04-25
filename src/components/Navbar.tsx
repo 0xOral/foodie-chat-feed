@@ -72,12 +72,18 @@ const Navbar = () => {
               onClick={() => setIsAuthModalOpen(true)} 
               variant="default"
               className="bg-foodle-accent hover:bg-foodle-accent-hover text-white"
+              id="auth-trigger"
             >
               Sign In
             </Button>
           )}
         </div>
       </div>
+      
+      <AuthModal 
+        isOpen={isAuthModalOpen} 
+        onClose={() => setIsAuthModalOpen(false)} 
+      />
     </nav>
   );
 };
