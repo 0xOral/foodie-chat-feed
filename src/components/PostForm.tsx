@@ -7,6 +7,9 @@ import { useToast } from "@/components/ui/use-toast";
 import { Send, Image } from "lucide-react";
 import { Post } from "@/data/mockData";
 import { getUserCourses } from "@/data/coursesData";
+import { createPost } from "@/api/post";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { toast } from "sonner";
 
 interface PostFormProps {
   onPostCreated: (post: Post) => void;
@@ -15,6 +18,7 @@ interface PostFormProps {
 
 const PostForm = ({ onPostCreated, courseId }: PostFormProps) => {
   const [content, setContent] = useState("");
+  const [selectedCourseId, setSelectedCourseId] = useState<string>(courseId || "");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { currentUser, isAuthenticated } = useAuth();
   const { toast } = useToast();
@@ -22,7 +26,7 @@ const PostForm = ({ onPostCreated, courseId }: PostFormProps) => {
   // Get the user's enrolled courses
   const userCourses = currentUser ? getUserCourses(currentUser.id) : [];
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!isAuthenticated || !currentUser) {
@@ -43,8 +47,10 @@ const PostForm = ({ onPostCreated, courseId }: PostFormProps) => {
       return;
     }
     
+    const postCourseId = courseId || selectedCourseId;
+    
     // If no course selected and not on a course page, show error
-    if (!courseId && userCourses.length > 0) {
+    if (!postCourseId && userCourses.length > 0) {
       toast({
         title: "Course required",
         description: "Please select a course for your post",
@@ -53,33 +59,27 @@ const PostForm = ({ onPostCreated, courseId }: PostFormProps) => {
       return;
     }
     
-    // Use the provided courseId or default to the first user course
-    const postCourseId = courseId || (userCourses.length > 0 ? userCourses[0].id : "");
+    // Use the provided courseId or the selected one
+    const finalCourseId = postCourseId || (userCourses.length > 0 ? userCourses[0].id : "");
     
     setIsSubmitting(true);
     
-    // In a real app, this would be an API call
-    setTimeout(() => {
-      const newPost: Post = {
-        id: `post-${Date.now()}`,
+    try {
+      const newPost = await createPost({
         userId: currentUser.id,
-        courseId: postCourseId,
+        courseId: finalCourseId,
         content: content.trim(),
         image: "/placeholder.svg", // For demo purposes
-        likes: 0,
-        createdAt: new Date().toISOString(),
-        comments: [],
-      };
+      });
       
       onPostCreated(newPost);
       setContent("");
+    } catch (error) {
+      console.error("Error creating post:", error);
+      toast.error("Failed to create post. Please try again.");
+    } finally {
       setIsSubmitting(false);
-      
-      toast({
-        title: "Post created",
-        description: "Your post has been created successfully",
-      });
-    }, 500); // Simulate network delay
+    }
   };
 
   return (
@@ -99,6 +99,27 @@ const PostForm = ({ onPostCreated, courseId }: PostFormProps) => {
               onChange={(e) => setContent(e.target.value)}
               disabled={!isAuthenticated || isSubmitting}
             />
+            
+            {!courseId && userCourses.length > 0 && (
+              <div className="mt-3">
+                <Select 
+                  value={selectedCourseId} 
+                  onValueChange={setSelectedCourseId}
+                  disabled={!isAuthenticated || isSubmitting}
+                >
+                  <SelectTrigger className="w-[200px] bg-gray-800 border-gray-700">
+                    <SelectValue placeholder="Select a course" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-gray-800 border-gray-700">
+                    {userCourses.map(course => (
+                      <SelectItem key={course.id} value={course.id}>
+                        {course.code} - {course.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
             
             <div className="flex justify-between mt-3">
               <Button

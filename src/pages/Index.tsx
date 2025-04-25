@@ -1,6 +1,5 @@
 
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 import Navbar from "@/components/Navbar";
 import Post from "@/components/Post";
 import PostForm from "@/components/PostForm";
@@ -8,17 +7,20 @@ import ProfileCard from "@/components/ProfileCard";
 import { posts, Post as PostType } from "@/data/mockData";
 import { useAuth } from "@/context/AuthContext";
 import CourseSidebar from "@/components/CourseSidebar";
-import { SidebarProvider } from "@/components/ui/sidebar";
+import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import CourseJoinDialog from "@/components/CourseJoinDialog";
 
 const Index = () => {
   const [allPosts, setAllPosts] = useState<PostType[]>(posts);
   const { isAuthenticated } = useAuth();
-  const navigate = useNavigate();
   const [isJoinDialogOpen, setIsJoinDialogOpen] = useState(false);
 
   const handlePostCreated = (newPost: PostType) => {
     setAllPosts(prev => [newPost, ...prev]);
+  };
+  
+  const handlePostDeleted = (deletedPostId: string) => {
+    setAllPosts(prev => prev.filter(post => post.id !== deletedPostId));
   };
 
   return (
@@ -26,10 +28,10 @@ const Index = () => {
       <div className="min-h-screen bg-foodle-background text-foodle-text flex w-full">
         <CourseSidebar onJoinCourse={() => setIsJoinDialogOpen(true)} />
         
-        <div className="flex-1">
+        <SidebarInset className="flex-1">
           <Navbar />
           
-          <div className="max-w-7xl mx-auto px-4 md:px-6 py-6">
+          <div className="max-w-7xl mx-auto px-4 md:px-6 py-6 w-full">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
               {/* Main Feed */}
               <div className="md:col-span-3 space-y-6">
@@ -39,7 +41,11 @@ const Index = () => {
                 
                 {allPosts.length > 0 ? (
                   allPosts.map(post => (
-                    <Post key={post.id} post={post} />
+                    <Post 
+                      key={post.id} 
+                      post={post} 
+                      onPostDeleted={() => handlePostDeleted(post.id)} 
+                    />
                   ))
                 ) : (
                   <div className="food-card p-6 text-center">
@@ -63,7 +69,7 @@ const Index = () => {
               </div>
             </div>
           </div>
-        </div>
+        </SidebarInset>
       </div>
 
       <CourseJoinDialog 

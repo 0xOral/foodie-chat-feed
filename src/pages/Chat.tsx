@@ -12,7 +12,6 @@ const Chat = () => {
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const { isAuthenticated } = useAuth();
   const [isJoinDialogOpen, setIsJoinDialogOpen] = useState(false);
-  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
   const handleSignIn = () => {
     const authTrigger = document.querySelector("#auth-trigger") as HTMLButtonElement;
@@ -23,13 +22,13 @@ const Chat = () => {
 
   return (
     <SidebarProvider defaultOpen={true}>
-      <div className="min-h-screen bg-foodle-background text-foodle-text flex">
+      <div className="min-h-screen bg-foodle-background text-foodle-text flex w-full">
         <CourseSidebar onJoinCourse={() => setIsJoinDialogOpen(true)} />
         
         <SidebarInset className="flex-1">
           <Navbar />
           
-          <div className="max-w-7xl mx-auto px-4 md:px-8 py-6">
+          <div className="max-w-7xl mx-auto px-4 md:px-8 py-6 w-full">
             <h1 className="text-2xl font-bold mb-6">Messages</h1>
             
             {isAuthenticated ? (

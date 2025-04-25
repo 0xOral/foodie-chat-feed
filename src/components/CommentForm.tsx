@@ -6,6 +6,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useToast } from "@/components/ui/use-toast";
 import { Send } from "lucide-react";
 import { Comment } from "@/data/mockData";
+import { createComment } from "@/api/post";
 
 interface CommentFormProps {
   postId: string;
@@ -18,7 +19,7 @@ const CommentForm = ({ postId, onCommentAdded }: CommentFormProps) => {
   const { currentUser, isAuthenticated } = useAuth();
   const { toast } = useToast();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!isAuthenticated || !currentUser) {
@@ -41,25 +42,25 @@ const CommentForm = ({ postId, onCommentAdded }: CommentFormProps) => {
     
     setIsSubmitting(true);
     
-    // In a real app, this would be an API call
-    setTimeout(() => {
-      const newComment: Comment = {
-        id: `comment-${Date.now()}`,
+    try {
+      const newComment = await createComment({
         userId: currentUser.id,
         postId,
-        content: content.trim(),
-        createdAt: new Date().toISOString(),
-      };
+        content: content.trim()
+      });
       
       onCommentAdded(newComment);
       setContent("");
-      setIsSubmitting(false);
-      
+    } catch (error) {
+      console.error("Error creating comment:", error);
       toast({
-        title: "Comment added",
-        description: "Your comment has been added successfully",
+        title: "Error",
+        description: "Failed to add comment. Please try again.",
+        variant: "destructive",
       });
-    }, 500); // Simulate network delay
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (

@@ -47,7 +47,7 @@ const Profile = () => {
 
   if (!profileUser) {
     return (
-      <div className="min-h-screen bg-foodle-background text-foodle-text">
+      <div className="min-h-screen bg-foodle-background text-foodle-text w-full">
         <Navbar />
         <div className="max-w-4xl mx-auto px-4 md:px-8 py-6">
           <div className="food-card">
@@ -60,13 +60,13 @@ const Profile = () => {
 
   return (
     <SidebarProvider defaultOpen={true}>
-      <div className="min-h-screen bg-foodle-background text-foodle-text flex">
+      <div className="min-h-screen bg-foodle-background text-foodle-text flex w-full">
         <CourseSidebar onJoinCourse={() => setIsJoinDialogOpen(true)} />
         
         <SidebarInset className="flex-1">
           <Navbar />
           
-          <div className="max-w-4xl mx-auto px-4 md:px-8 py-6">
+          <div className="max-w-4xl mx-auto px-4 md:px-8 py-6 w-full">
             {/* Profile header */}
             <div className="food-card mb-6">
               <div className="flex flex-col md:flex-row gap-6">
