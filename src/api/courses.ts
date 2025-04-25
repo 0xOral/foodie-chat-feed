@@ -1,6 +1,15 @@
-
 import { toast } from "sonner";
-import type { Course } from "@/data/mockData";
+import type { Post } from "@/data/mockData";
+
+export interface Course {
+  id: string;
+  code: string;
+  name: string;
+  description: string;
+  instructor: string;
+  enrolledStudents: string[];
+  requiresAccessCode?: boolean;
+}
 
 export const fetchCourses = async () => {
   try {
