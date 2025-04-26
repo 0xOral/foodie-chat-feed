@@ -51,7 +51,7 @@ const Course = () => {
 
   return (
     <SidebarProvider defaultOpen={true}>
-      <div className="min-h-screen bg-foodle-background text-foodle-text flex">
+      <div className="min-h-screen bg-foodle-background text-foodle-text flex w-full">
         <CourseSidebar 
           activeCourseId={courseId} 
           onJoinCourse={() => setIsJoinDialogOpen(true)}
